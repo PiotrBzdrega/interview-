@@ -26,7 +26,7 @@ int main()
 
     std::cout<<"vector are same: "<<((a==g) ? true:false)<<"\n";
 
-
+    Tree* root=new Tree("root");
 
     std::vector<char> b ={'a','b','c','d'};
     PrintVectorRevers(b);//TASK6
@@ -96,6 +96,20 @@ std::vector<bool> GetBitsVector(std::string inputValue)
     return GetBitsVector(HexStringToInt(inputValue));
 }
 
+//TASK4
+class Tree{
+private:
+    std::string name; 
+public:    
+    Tree(std::string name) {this->name=name;}
+     uint32_t GetSubCount();
+     uint32_t GetAllSubCount();
+     void operator delete(void * p);
+     void print(int depth,bool printnmber);
+ 
+};
+
+
 //TASK6
 //TODO: template & better solution
 void PrintVectorRevers(std::vector<char> elements)
@@ -106,5 +120,5 @@ void PrintVectorRevers(std::vector<char> elements)
         elements.pop_back();
         return PrintVectorRevers(elements);
     }       
-    
 }
+
