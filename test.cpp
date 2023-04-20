@@ -1,5 +1,109 @@
 #include "test.h"
 
+//TASK4, Task5
+class Tree{
+private:
+    std::string name;
+    std::vector<Tree*> branch;
+public:     
+    Tree(std::string name) {this->name=name;}
+
+    std::string GetName()
+    {
+        return this->name;
+    }
+
+    std::vector<Tree*> GetBranches()
+    {
+        return this->branch;
+    }
+
+    Tree* AddSub(std::string name)
+    {
+        Tree* NewBranch = new Tree(name);
+        branch.push_back(NewBranch);
+        return NewBranch;
+    }
+
+    void print(int indent)
+    {   
+        //print tabulator indent times + name of current branch
+        std::cout << std::string(indent, '\t') << this->GetName() << "\n"; 
+            
+        //loop through all subbranches
+        for (Tree* i : this->GetBranches())
+        {   if (i!=nullptr)
+            { 
+                i->print(indent+1);
+            }
+        }
+    }
+    //TODO: How linux print directories
+    void print(int indent,bool numbers)
+    {
+        //print tabulator indent times + name of current branch
+        std::cout <<". "<< this-> GetName() << "\n"; 
+            
+        for (size_t i = 0; i < this->GetBranches().size(); i++)
+        {
+            if (this->GetBranches()[i]!=nullptr)
+            { 
+                std::cout << std::string(indent+1, '\t');
+                if (numbers)
+                {
+                    std::cout<<i+1<<"";
+                    if (indent>0)
+                    {   
+                        for (size_t i = 0; i < indent; i++)
+                        {
+                            std::cout<<".x";
+                        }
+                        
+                        
+                    }
+                    
+                }
+                       
+                this->GetBranches()[i]->print(indent+1,numbers);
+            }
+        }
+    }
+
+     uint32_t GetSubCount()
+     {
+        return this->branch.size();
+     }
+
+     uint32_t GetAllSubCount()
+     {
+        //all subbranches
+        int subs=0;
+        //loop through all subbranches
+        for (Tree* i : this->GetBranches())
+        {   if (i!=nullptr)
+            {   subs++;
+                subs+=i->GetAllSubCount();
+            }
+        }
+        return subs;
+     }
+    //  void Del(int child)
+    //  {
+    //     if (this->GetBranches()[child] !=nullptr )
+    //     {   //Tree* i : this->GetBranches()[child]->GetBranches()
+    //         for (int i=0; i<this->GetBranches().size();i++)
+    //         {   
+    //             if (this->GetBranches())
+                
+    //             if (i!=nullptr)
+    //             { Del(int child)  }
+    //         }         
+    //         delete(this->GetBranches()[child])
+    //     }
+    //  }
+     //void operator delete(void * p);
+     //void print(int depth,bool printnmber);
+};
 
 int main()
 {
@@ -26,7 +130,31 @@ int main()
 
     std::cout<<"vector are same: "<<((a==g) ? true:false)<<"\n";
 
-    Tree* root=new Tree("root");
+    Tree* root = new Tree("root");
+    // std::cout<<root<<"\n";
+    // for (Tree* i :root->branch)
+    // {
+    //    std::cout<<i<<"\n"; 
+    // }
+    
+
+    Tree* galaz1= root->AddSub("galaz 1");
+    Tree* galaz2 = root->AddSub("galaz 2");
+
+    Tree* galaz3 = root->AddSub("galaz 3");
+
+    Tree* galaz1_1 = galaz1->AddSub("galaz 1.1");
+
+    Tree* galaz2_1 = galaz2->AddSub("galaz 2.1");
+
+    Tree* galaz2_2 = galaz2->AddSub("galaz 2.2");
+
+    Tree* galaz2_1_2 = galaz2_1->AddSub("galaz 2.1.1");
+
+    root->print(0,true);
+    std::cout<<root->GetSubCount()<<"\n";
+    std::cout<<galaz1->GetSubCount()<<"\n";
+    std::cout<<root->GetAllSubCount()<<"\n";
 
     std::vector<char> b ={'a','b','c','d'};
     PrintVectorRevers(b);//TASK6
@@ -96,18 +224,7 @@ std::vector<bool> GetBitsVector(std::string inputValue)
     return GetBitsVector(HexStringToInt(inputValue));
 }
 
-//TASK4
-class Tree{
-private:
-    std::string name; 
-public:    
-    Tree(std::string name) {this->name=name;}
-     uint32_t GetSubCount();
-     uint32_t GetAllSubCount();
-     void operator delete(void * p);
-     void print(int depth,bool printnmber);
- 
-};
+
 
 
 //TASK6
