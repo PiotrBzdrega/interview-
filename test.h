@@ -1,6 +1,6 @@
 #include <iostream>
 #include <vector>
-
+#include <string>
 uint32_t GetBitsFromUint32(uint32_t inputValue, uint8_t bitOffset, uint8_t Length); //TASK1
 uint32_t GetBitsFromUint32(std::string inputValue, uint8_t bitOffset, uint8_t Length); //TASK2
 std::vector<bool> GetBitsVector(uint32_t inputValue); //TASK3

@@ -4,13 +4,35 @@
 class Tree{
 private:
     std::string name;
+    Tree* parent;
     std::vector<Tree*> branch;
 public:     
     Tree(std::string name) {this->name=name;}
+    //~Tree()
+    Tree* GetParent() {return this->parent;}
 
     std::string GetName()
     {
         return this->name;
+    }
+
+    std::string GetIndex(Tree* par,Tree* child)
+    {
+        std::string res="";
+        if (par!=nullptr)
+        {   
+            int i=1;
+            for (Tree* pa : par->GetBranches())
+            {
+                if (pa==child)
+                {
+                    res+=GetIndex(par->GetParent(),par) + std::to_string(i) + ".";
+                    return res;
+                }
+                i++;
+            }
+        }
+        return res;       
     }
 
     std::vector<Tree*> GetBranches()
@@ -21,50 +43,31 @@ public:
     Tree* AddSub(std::string name)
     {
         Tree* NewBranch = new Tree(name);
+        NewBranch->parent=this;
         branch.push_back(NewBranch);
         return NewBranch;
     }
 
     void print(int indent)
     {   
-        //print tabulator indent times + name of current branch
-        std::cout << std::string(indent, '\t') << this->GetName() << "\n"; 
-            
-        //loop through all subbranches
-        for (Tree* i : this->GetBranches())
-        {   if (i!=nullptr)
-            { 
-                i->print(indent+1);
-            }
-        }
+        print(indent,0);
     }
     //TODO: How linux print directories
     void print(int indent,bool numbers)
     {
         //print tabulator indent times + name of current branch
-        std::cout <<". "<< this-> GetName() << "\n"; 
-            
-        for (size_t i = 0; i < this->GetBranches().size(); i++)
+        std::cout << std::string(indent, '\t');
+        if (numbers && this->GetParent() != nullptr)
         {
-            if (this->GetBranches()[i]!=nullptr)
+            std::cout<< (this->GetIndex(this->GetParent(),this))<<" ";
+        }
+        std::cout<< this->GetName() << "\n"; 
+            
+        //loop through all subbranches
+        for (Tree* i : this->GetBranches())
+        {   if (i!=nullptr)
             { 
-                std::cout << std::string(indent+1, '\t');
-                if (numbers)
-                {
-                    std::cout<<i+1<<"";
-                    if (indent>0)
-                    {   
-                        for (size_t i = 0; i < indent; i++)
-                        {
-                            std::cout<<".x";
-                        }
-                        
-                        
-                    }
-                    
-                }
-                       
-                this->GetBranches()[i]->print(indent+1,numbers);
+                i->print(indent+1,numbers);
             }
         }
     }
@@ -87,22 +90,25 @@ public:
         }
         return subs;
      }
-    //  void Del(int child)
-    //  {
-    //     if (this->GetBranches()[child] !=nullptr )
-    //     {   //Tree* i : this->GetBranches()[child]->GetBranches()
-    //         for (int i=0; i<this->GetBranches().size();i++)
-    //         {   
-    //             if (this->GetBranches())
-                
-    //             if (i!=nullptr)
-    //             { Del(int child)  }
-    //         }         
-    //         delete(this->GetBranches()[child])
-    //     }
-    //  }
-     //void operator delete(void * p);
-     //void print(int depth,bool printnmber);
+    //FIXME
+     void Del(int child)
+     {
+        if (this->GetBranches()[child] !=nullptr )
+        {   //Tree* i : this->GetBranches()[child]->GetBranches()
+            for (int i=0; i < this->GetBranches().size() ; i++)
+            {                  
+                // if (this->GetBranches()[i]!=nullptr)
+                // {
+                //     this->GetBranches()[i]->Del(i);
+                // }     
+                ;
+            }       
+                //this->GetBranches().erase(this->GetBranches().begin()+0);
+        }
+     }
+     //FIXME
+    //void operator delete(void * p);
+
 };
 
 int main()
@@ -152,14 +158,19 @@ int main()
     Tree* galaz2_1_2 = galaz2_1->AddSub("galaz 2.1.1");
 
     root->print(0,true);
+    std::cout<<root->GetBranches()[1]<<"\n";
+    root->Del(0);
+
+    root->GetBranches()
+
+    //root->print(0,true);
+
     std::cout<<root->GetSubCount()<<"\n";
     std::cout<<galaz1->GetSubCount()<<"\n";
     std::cout<<root->GetAllSubCount()<<"\n";
 
     std::vector<char> b ={'a','b','c','d'};
     PrintVectorRevers(b);//TASK6
-    
-    
     
     return 0;
 } 
@@ -233,7 +244,10 @@ void PrintVectorRevers(std::vector<char> elements)
 {
    if (elements.size()>0)
     {
-        std::cout<< elements.back()<<"\n";
+        std::cout<< elements.back();
+        if (elements.size()>1)
+            std::cout<<", ";
+        
         elements.pop_back();
         return PrintVectorRevers(elements);
     }       
