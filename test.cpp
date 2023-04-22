@@ -6,9 +6,17 @@ private:
     std::string name;
     Tree* parent;
     std::vector<Tree*> branch;
+    std::vector<Tree*> &GetBranches() {return this->branch;}
 public:     
     Tree(std::string name) {this->name=name;}
-    //~Tree()
+    ~Tree()
+    {
+        delete parent; 
+        for (Tree* i : branch)
+        {
+            delete i;
+        }      
+    }
     Tree* GetParent() {return this->parent;}
 
     std::string GetName()
@@ -33,11 +41,6 @@ public:
             }
         }
         return res;       
-    }
-
-    std::vector<Tree*> GetBranches()
-    {
-        return this->branch;
     }
 
     Tree* AddSub(std::string name)
@@ -93,19 +96,22 @@ public:
     //FIXME
      void Del(int child)
      {
-        if (this->GetBranches()[child] !=nullptr )
-        {   //Tree* i : this->GetBranches()[child]->GetBranches()
-            for (int i=0; i < this->GetBranches().size() ; i++)
-            {                  
-                // if (this->GetBranches()[i]!=nullptr)
-                // {
-                //     this->GetBranches()[i]->Del(i);
-                // }     
-                ;
-            }       
-                //this->GetBranches().erase(this->GetBranches().begin()+0);
+
+        if (child<this->GetBranches().size())
+        {
+            //child has memory allocation
+           if (this->GetBranches()[child] !=nullptr )
+           {    
+                //delete all branches of requested child
+                while (! this->GetBranches()[child]->GetBranches().empty())
+                {
+                    this->GetBranches()[child]->Del(0); //1st element is deleted till vector becomes empty (after deletion, branch size is reduced) 
+                }
+                //remove requested child from branches
+                this->GetBranches().erase(this->GetBranches().begin()+child);
+           }
         }
-     }
+    }
      //FIXME
     //void operator delete(void * p);
 
@@ -137,12 +143,6 @@ int main()
     std::cout<<"vector are same: "<<((a==g) ? true:false)<<"\n";
 
     Tree* root = new Tree("root");
-    // std::cout<<root<<"\n";
-    // for (Tree* i :root->branch)
-    // {
-    //    std::cout<<i<<"\n"; 
-    // }
-    
 
     Tree* galaz1= root->AddSub("galaz 1");
     Tree* galaz2 = root->AddSub("galaz 2");
@@ -158,12 +158,12 @@ int main()
     Tree* galaz2_1_2 = galaz2_1->AddSub("galaz 2.1.1");
 
     root->print(0,true);
-    std::cout<<root->GetBranches()[1]<<"\n";
-    root->Del(0);
 
-    root->GetBranches()
-
-    //root->print(0,true);
+    root->Del(1);
+    
+    root->print(0,true);
+    galaz2->print(0,true);
+    galaz2_1->print(0,true);
 
     std::cout<<root->GetSubCount()<<"\n";
     std::cout<<galaz1->GetSubCount()<<"\n";
