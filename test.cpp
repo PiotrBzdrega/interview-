@@ -315,32 +315,49 @@ uint32_t BitStream::Add(uint32_t bitLength, void * dataAddr)
 
     for (uint32_t i = 0; i < bitLength; i++)
     {
-
        uint8_t bytes = i / 8;
        uint8_t bites = i % 8;
-       printf("res2: %02x \n",Stream[bytes]);
+       printf("Stream vor : %02x \n",this->Stream[bytes]);
 
        uint8_t dataBit = Mask[bites] & (data[bytes]);
-       bool a = dataBit>0;
-       printf("res1: %02x \n",dataBit);
-       printf("res1: %d \n",GetCurrentBit());
-       Stream[bytes] +=(a<<GetCurrentBit());
-       printf("res2: %02x \n",Stream[bytes]);
-       this->MoveBit();
-    }
-    
-    
+       bool shift = dataBit>0;
+       printf("bit data: %02x \n",dataBit);
+       printf("current bit: %d \n",this->bit);
+       Stream[bytes] +=(shift << this->bit );
+       printf("Stream nach : %02x \n",Stream[bytes]);
+       this->MoveBitForward();
+    }  
     return this->GetBitLength();
 }
 
-    uint32_t Get(uint32_t bitLength, void* dataAddr)
+    uint32_t BitStream::Get(uint32_t bitLength, void* dataAddr)
     {
+        if (bitLength <= this->GetBitLength())
+        {
+            uint8_t* data= static_cast<uint8_t*>(dataAddr);
         
+            for (uint32_t i = bitLength; i !=0 ; i--)
+            {
+                uint8_t bytes = i / 8;
+                uint8_t bites = i % 8;
+                printf("data vor : %02x \n",data[bytes]);
+
+                uint8_t dataBit = Mask[bites] & (this->Stream[bytes]);
+                bool shift = dataBit>0;
+                printf("bit data: %02x \n",dataBit);
+                printf("current bit: %d \n",this->bit);
+                data[bytes] +=(shift << this->bit );
+                printf("data nach : %02x \n",Stream[bytes]);
+                this->MoveBitBackward();
+            }
+        }
+        
+         return this->GetBitLength();      
     } 
 
 uint32_t BitStream::GetBitLength()
 {
-    return GetCurrentByte() *8 + GetCurrentBit();
+    return (this->byte) *8 + (this->bit);
 }
 
 void BitStream::ResetData()
@@ -353,24 +370,36 @@ void BitStream::ResetData()
     }
 }
 
-void BitStream::MoveBit()
+void BitStream::MoveBitForward()
 {
     //move bit "pointer" forward
-    this->bit += 1;
+    this->bit ++;
 
     //if there is currently more bits than 8 -> increase byte "pointer"
     if (this->bit > 7)
     {
         this->bit = 0;
-        this->byte += 1;
+        this->byte ++;
     }
 }
 
-uint8_t BitStream::GetCurrentBit()
-{
-    return this->bit;
+void BitStream::MoveBitBackward()
+{   
+    if (this->bit > 0 || this->byte > 0)
+    {
+        if (this->bit > 0)
+        {
+            //move bit "pointer" backward
+            this->bit --;
+        }
+        else
+        {
+            //move byte "pointer" backward
+            this->byte --;
+            this->bit = 7;           
+        }
+        
+    }
 }
-uint8_t BitStream::GetCurrentByte()
-{
-    return this->byte;
-}
+
+

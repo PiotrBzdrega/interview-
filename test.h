@@ -30,9 +30,9 @@ public:
     uint32_t GetBitLength(); // returns amount of added bits 
     uint32_t GetData(void * addr, uint32_t maxBitLength); // allows to get full stream, returns  number of bits
     void ResetData(); // clears internal buffer
-    void MoveBit(); //update current bit position in BitStream
-    uint8_t GetCurrentBit(); //returns current "pointer" bit in BitStream
-    uint8_t GetCurrentByte(); //returns current "pointer" byte in BitStream  
+    void MoveBitForward(); //update current bit position in BitStream
+    void MoveBitBackward(); //update current bit position in BitStream
+
 };
 
 
