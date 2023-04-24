@@ -6,18 +6,42 @@ private:
     std::string name;
     Tree* parent;
     std::vector<Tree*> branch;
-    std::vector<Tree*> &GetBranches() {return this->branch;}
+    std::vector<Tree*> &GetBranches() {return this->branch;} 
+    Tree* &GetParent() {return this->parent;}  
 public:     
-    Tree(std::string name) {this->name=name;}
+    Tree(std::string name) {this->name=name; this->parent=nullptr;}
     ~Tree()
-    {
-        delete parent; 
-        for (Tree* i : branch)
+    {       
+        std::cout << "Destructor: "<<this->GetName()<<"\n";
+
+        if (parent != nullptr)
         {
-            delete i;
-        }      
+            for (size_t i = 0; i < parent->GetBranches().size(); i++)
+            {
+                //this found as child in parent interface
+                if (this == parent->GetBranches()[i])
+                {
+                    //delete this object from parent interface
+                    parent->Del(i);
+                }
+                
+                
+            }
+            //this object is not responsible for parrent allocation set null
+            parent = nullptr;
+        }
+        else
+        {
+            //root or detached branch -> delete branches
+            while (! this->GetBranches().empty())
+            {
+                this->Del(0);
+            }  
+        }
     }
-    Tree* GetParent() {return this->parent;}
+
+
+    
 
     std::string GetName()
     {
@@ -53,9 +77,9 @@ public:
 
     void print(int indent)
     {   
-        print(indent,0);
+        print(indent,false);
     }
-    //TODO: How linux print directories
+
     void print(int indent,bool numbers)
     {
         //print tabulator indent times + name of current branch
@@ -93,7 +117,7 @@ public:
         }
         return subs;
      }
-    //FIXME
+
      void Del(int child)
      {
 
@@ -105,16 +129,19 @@ public:
                 //delete all branches of requested child
                 while (! this->GetBranches()[child]->GetBranches().empty())
                 {
-                    this->GetBranches()[child]->Del(0); //1st element is deleted till vector becomes empty (after deletion, branch size is reduced) 
+                    this->GetBranches()[child]->Del(0); //first element is deleted till vector becomes empty (after deletion, branch size is reduced) 
                 }
+                //unlink parent from pointer
+                this->GetBranches()[child]->parent=nullptr;
+                //free memory
+                delete (this->GetBranches()[child]);
                 //remove requested child from branches
-                this->GetBranches().erase(this->GetBranches().begin()+child);
+                this->GetBranches().erase(this->GetBranches().begin()+child);    
            }
         }
-    }
-     //FIXME
-    //void operator delete(void * p);
 
+        
+    }
 };
 
 int main()
@@ -159,11 +186,10 @@ int main()
 
     root->print(0,true);
 
-    root->Del(1);
-    
-    root->print(0,true);
-    galaz2->print(0,true);
-    galaz2_1->print(0,true);
+    // root->Del(0);
+
+    // delete(galaz2_2);
+
 
     std::cout<<root->GetSubCount()<<"\n";
     std::cout<<galaz1->GetSubCount()<<"\n";
@@ -172,6 +198,14 @@ int main()
     std::vector<char> b ={'a','b','c','d'};
     PrintVectorRevers(b);//TASK6
     
+    std::cout<<"\n"<<"TASK 7"<<"\n";
+
+    uint32_t databuffer=5;
+    BitStream Bitstr;
+    Bitstr.Add(2,&databuffer);
+
+
+
     return 0;
 } 
 
@@ -253,3 +287,71 @@ void PrintVectorRevers(std::vector<char> elements)
     }       
 }
 
+//TASK 7
+BitStream::BitStream(/* args */)
+{
+     Stream = new uint8_t[MAX_LENGTH]();
+}
+
+BitStream::~BitStream()
+{ 
+    delete [] Stream;
+
+}
+
+
+uint32_t BitStream::Add(uint32_t bitLength, void * dataAddr)
+{
+    //8bites in 1byte
+   uint8_t* data= static_cast<uint8_t*>(dataAddr);
+
+    for (uint32_t i = 0; i < bitLength; i++)
+    {
+
+       uint8_t bytes = i / 8;
+       uint8_t bites = i % 8;
+       printf("res2: %02x \n",Stream[bytes]);
+
+       uint8_t dataBit = Mask[bites] & (data[bytes]);
+       printf("res1: %02x \n",dataBit);
+       Stream[bytes] |=(dataBit<<GetCurrentBit());
+       printf("res2: %02x \n",Stream[bytes]);
+
+       this->MoveBit();
+    }
+    
+    
+    return 8;
+}
+
+uint32_t BitStream::GetBitLength()
+{
+    return GetCurrentByte() *8 + GetCurrentBit();
+}
+
+void BitStream::ResetData()
+{
+    delete this;
+}
+
+void BitStream::MoveBit()
+{
+    //move bit "pointer" forward
+    this->bit += 1;
+
+    //if there is currently more bits than 8 -> increase byte "pointer"
+    if (this->bit > 7)
+    {
+        this->bit = 0;
+        this->byte += 1;
+    }
+}
+
+uint8_t BitStream::GetCurrentBit()
+{
+    return this->bit;
+}
+uint8_t BitStream::GetCurrentByte()
+{
+    return this->byte;
+}
