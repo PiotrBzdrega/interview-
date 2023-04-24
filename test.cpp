@@ -200,12 +200,15 @@ int main()
     
     std::cout<<"\n"<<"TASK 7"<<"\n";
 
-    uint32_t databuffer=5;
+    uint32_t databuffer=3;
     BitStream Bitstr;
     Bitstr.Add(2,&databuffer);
-
-
-
+    std::cout<<"\n"<<"second add"<<"\n";
+    std::cout<<Bitstr.Add(2,&databuffer)<<"\n";
+    
+//     TEST_CASE( "Factorials are computed", "[factorial]" ) {
+//     REQUIRE( Bitstr.Add(2,&databuffer) == 6 );
+// }
     return 0;
 } 
 
@@ -273,7 +276,6 @@ std::vector<bool> GetBitsVector(std::string inputValue)
 
 
 //TASK6
-//TODO: template & better solution
 void PrintVectorRevers(std::vector<char> elements)
 {
    if (elements.size()>0)
@@ -291,6 +293,8 @@ void PrintVectorRevers(std::vector<char> elements)
 BitStream::BitStream(/* args */)
 {
      Stream = new uint8_t[MAX_LENGTH]();
+     bit=0;
+     byte=0;
 }
 
 BitStream::~BitStream()
@@ -299,6 +303,10 @@ BitStream::~BitStream()
 
 }
 
+uint8_t* BitStream::GetStream()
+{
+    return this->Stream;
+}
 
 uint32_t BitStream::Add(uint32_t bitLength, void * dataAddr)
 {
@@ -313,16 +321,22 @@ uint32_t BitStream::Add(uint32_t bitLength, void * dataAddr)
        printf("res2: %02x \n",Stream[bytes]);
 
        uint8_t dataBit = Mask[bites] & (data[bytes]);
+       bool a = dataBit>0;
        printf("res1: %02x \n",dataBit);
-       Stream[bytes] |=(dataBit<<GetCurrentBit());
+       printf("res1: %d \n",GetCurrentBit());
+       Stream[bytes] +=(a<<GetCurrentBit());
        printf("res2: %02x \n",Stream[bytes]);
-
        this->MoveBit();
     }
     
     
-    return 8;
+    return this->GetBitLength();
 }
+
+    uint32_t Get(uint32_t bitLength, void* dataAddr)
+    {
+        
+    } 
 
 uint32_t BitStream::GetBitLength()
 {
@@ -331,7 +345,12 @@ uint32_t BitStream::GetBitLength()
 
 void BitStream::ResetData()
 {
-    delete this;
+    this->bit=0;
+    this->byte=0;
+    for (size_t i = 0; i < MAX_LENGTH; i++)
+    {
+        Stream[i]=0;
+    }
 }
 
 void BitStream::MoveBit()
