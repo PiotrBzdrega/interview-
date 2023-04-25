@@ -1,8 +1,102 @@
-//#define CATCH_CONFIG_MAIN
-#define CATCH_CONFIG_RUNNER
+#include "test.h"
+
+#if 0
+#define CATCH_CONFIG_MAIN
+////#define CATCH_CONFIG_RUNNER
 
 #include "catch.hpp"
-#include "test.h"
+
+
+TEST_CASE("Catching proof") {
+    CHECK(1 == 1);   
+}
+
+TEST_CASE("TASK1") {
+REQUIRE( GetBitsFromUint32(0xABCDEF12, 4, 12) ==  0x00000ef1);   
+}
+
+TEST_CASE("TASK2") {
+REQUIRE( GetBitsFromUint32("0xaBCDEF12", 4, 12) ==  0x00000ef1);   
+}
+
+TEST_CASE("TASK3","[task3]") {
+    SECTION("Bit order correctness")
+    {
+        std::vector<bool> a = GetBitsVector(149);
+        uint32_t a_int=149;
+    for (size_t i = 0; i < a.size(); i++)
+    {
+        bool res = a_int & (1<<i);
+        INFO("bit: "+i);
+        CHECK( a[i] ==  res); 
+    }
+    }
+    SECTION("vectors are identical")
+    {
+    std::vector<bool> b = GetBitsVector(0x95);
+    std::vector<bool> c = GetBitsVector("0x95");
+    REQUIRE( b ==  c);  
+    } 
+}
+
+// TEST_CASE("TASK4/5") {
+    // Tree* root = new Tree("root");
+
+    // Tree* galaz1= root->AddSub("galaz 1");
+    // Tree* galaz2 = root->AddSub("galaz 2");
+
+    // Tree* galaz3 = root->AddSub("galaz 3");
+
+    // Tree* galaz1_1 = galaz1->AddSub("galaz 1.1");
+
+    // Tree* galaz2_1 = galaz2->AddSub("galaz 2.1");
+
+    // Tree* galaz2_2 = galaz2->AddSub("galaz 2.2");
+
+    // Tree* galaz2_1_2 = galaz2_1->AddSub("galaz 2.1.1");
+
+    // root->print(0,true);
+
+    // // root->Del(0);
+
+    // // delete(galaz2_2);
+
+
+    // std::cout<<root->GetSubCount()<<"\n";
+    // std::cout<<galaz1->GetSubCount()<<"\n";
+    // std::cout<<root->GetAllSubCount()<<"\n";
+// }
+
+
+
+TEST_CASE("TASK6") {
+    std::vector<char> a ={'a','b','c','d'};
+    std::ostringstream oss;
+    PrintVectorRevers(a,oss);
+    //assert(oss && oss.str() == "Hello");
+    REQUIRE( oss.str() ==  "d,c,b,a");   
+}
+
+TEST_CASE("TASK7") {
+    BitStream Bitstr;
+    SECTION("Add")
+    {
+    uint32_t databuffer=99;
+    REQUIRE(Bitstr.Add(2,&databuffer)==2);
+    uint32_t databuffer1;
+    REQUIRE(Bitstr.Add(8,&databuffer)==10);
+    //REQUIRE(Bitstr.GetData(&databuffer1,sizeof(databuffer1*8))==1);
+
+    }
+    
+    SECTION("Get")
+    {
+    uint16_t databuffer2=0;
+    REQUIRE(Bitstr.Get(10,&databuffer2)==0);
+    REQUIRE(databuffer2==399);
+    }  
+}
+#endif
 
 //TASK4, Task5
 class Tree{
@@ -148,92 +242,35 @@ public:
     }
 };
 
-int adam()
-{
-    std::cout<<"adam";
-    
-    return 1;
-}
 
-TEST_CASE("FindMax") {
-REQUIRE(1 == 1);   
-}
 
+#if 1
 int main()
 {
-
-    int result = Catch::Session().run();
-    std::cin.get();
-// /* I used uintx_t types to be sure that this variable has actually x amount of bits */
-//     uint32_t res = GetBitsFromUint32(0xABCDEF12, 4, 12);//TASK1
-//     printf("res: %08x \n",res);
-//     uint32_t res1 = GetBitsFromUint32("0xaBCDEF12", 4, 12);//TASK2
-//     printf("res1: %08x \n",res1);
-    
  
+
+    std::getchar();  
+    std::cout<<"adam";
  
-//     std::vector<bool> a = GetBitsVector(149); //TASK3
-//     for (auto i:a)
-//     {
-//         std::cout<<i<<"\n";
-//     }
+    // std::vector<bool> a = GetBitsVector(149); //TASK3
+    // for (auto i:a)
+    // {
+    //     std::cout<<i<<"\n";
+    // }
 
-//     std::vector<bool> g = GetBitsVector("0x95"); //TASK3
-//     for (auto i:g)
-//     {
-//         std::cout<<i<<"\n";
-//     }
+    // std::vector<bool> g = GetBitsVector("0x95"); //TASK3
+    // for (auto i:g)
+    // {
+    //     std::cout<<i<<"\n";
+    // }
 
-//     std::cout<<"vector are same: "<<((a==g) ? true:false)<<"\n";
+    // std::cout<<"vector are same: "<<((a==g) ? true:false)<<"\n";
 
-//     Tree* root = new Tree("root");
-
-//     Tree* galaz1= root->AddSub("galaz 1");
-//     Tree* galaz2 = root->AddSub("galaz 2");
-
-//     Tree* galaz3 = root->AddSub("galaz 3");
-
-//     Tree* galaz1_1 = galaz1->AddSub("galaz 1.1");
-
-//     Tree* galaz2_1 = galaz2->AddSub("galaz 2.1");
-
-//     Tree* galaz2_2 = galaz2->AddSub("galaz 2.2");
-
-//     Tree* galaz2_1_2 = galaz2_1->AddSub("galaz 2.1.1");
-
-//     root->print(0,true);
-
-//     // root->Del(0);
-
-//     // delete(galaz2_2);
-
-
-//     std::cout<<root->GetSubCount()<<"\n";
-//     std::cout<<galaz1->GetSubCount()<<"\n";
-//     std::cout<<root->GetAllSubCount()<<"\n";
-
-//     std::vector<char> b ={'a','b','c','d'};
-//     PrintVectorRevers(b);//TASK6
-    
-//     std::cout<<"\n"<<"TASK 7"<<"\n";
-
-//     uint32_t databuffer=99;
-//     BitStream Bitstr;
-//     Bitstr.Add(2,&databuffer);
-//     std::cout<<"\n"<<"second add"<<"\n";
-//     std::cout<<Bitstr.Add(8,&databuffer)<<"\n";
-
-//     std::cout<<"\n"<<"TASK 7"<<"\n";    
-//     uint16_t databuffer2=0;
-//     std::cout<<Bitstr.Get(3,&databuffer2)<<"\n";
-//     std::cout<<databuffer2<<"\n";
-    
-
-//     REQUIRE( Bitstr.Get(3,&databuffer2) == 3 );
+    // std::cout<<"\n"<<"TASK 7"<<"\n";
 
     return 0;
 } 
-
+#endif
 
 
 
@@ -300,16 +337,16 @@ std::vector<bool> GetBitsVector(std::string inputValue)
 
 
 //TASK6
-void PrintVectorRevers(std::vector<char> elements)
+void PrintVectorRevers(std::vector<char> elements,std::ostream& os = std::cout)
 {
    if (elements.size()>0)
     {
-        std::cout<< elements.back();
+        os<< elements.back();
         if (elements.size()>1)
-            std::cout<<", ";
+            os<<",";
         
         elements.pop_back();
-        return PrintVectorRevers(elements);
+        return PrintVectorRevers(elements,os);
     }       
 }
 
@@ -391,10 +428,10 @@ uint32_t BitStream::GetBitLength()
     return (this->byte) *8 + (this->bit);
 }
 
-// uint32_t GetData(void * addr, uint32_t maxBitLength)
-// {
-
-// }
+uint32_t BitStream::GetData(void * addr, uint32_t maxBitLength)
+{
+    return this->Get(maxBitLength,addr);
+}
 
 void BitStream::ResetData()
 {
