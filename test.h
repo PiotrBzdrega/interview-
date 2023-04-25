@@ -1,7 +1,7 @@
+
 #include <iostream>
 #include <vector>
 #include <string>
-//#include <catch2/catch_test_macros.hpp>
 uint32_t GetBitsFromUint32(uint32_t inputValue, uint8_t bitOffset, uint8_t Length); //TASK1
 uint32_t GetBitsFromUint32(std::string inputValue, uint8_t bitOffset, uint8_t Length); //TASK2
 std::vector<bool> GetBitsVector(uint32_t inputValue); //TASK3
