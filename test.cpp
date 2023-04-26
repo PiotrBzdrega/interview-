@@ -14,21 +14,24 @@ public:
     {       
         std::cout << "Destructor: "<<this->GetName()<<"\n";
 
-        if (parent != nullptr)
+        Tree* par=this->parent;
+        if (par != nullptr)
         {
-            for (size_t i = 0; i < parent->GetBranches().size(); i++)
+            for (size_t i = 0; i < par->GetBranches().size(); i++)
             {
                 //this found as child in parent interface
-                if (this == parent->GetBranches()[i])
+                if (this == par->GetBranches()[i])
                 {
                     //delete this object from parent interface
-                    parent->Del(i);
+                    par->Del(i);
+                    delete(par->GetBranches()[i]);
+                    exit;
                 }
                 
                 
             }
             //this object is not responsible for parrent allocation set null
-            parent = nullptr;
+            //parent = nullptr;
         }
         else
         {
@@ -36,6 +39,7 @@ public:
             while (! this->GetBranches().empty())
             {
                 this->Del(0);
+                
             }  
         }
     }
@@ -134,7 +138,8 @@ public:
                 //unlink parent from pointer
                 this->GetBranches()[child]->parent=nullptr;
                 //free memory
-                delete (this->GetBranches()[child]);
+                //free(this->GetBranches()[child]);
+                //delete (this->GetBranches()[child]);
                 //remove requested child from branches
                 this->GetBranches().erase(this->GetBranches().begin()+child);    
            }
@@ -448,6 +453,35 @@ int main()
 //     std::cout<<Bitstr2.Get(10,&databuffer2)<<"\n";
 //     std::cout<<databuffer2<<"\n";
 //     std::cout<<(databuffer2==399);
+
+//TREE
+    Tree* root = new Tree("root");
+
+    Tree* galaz1= root->AddSub("galaz 1");
+    Tree* galaz2 = root->AddSub("galaz 2");
+
+    Tree* galaz3 = root->AddSub("galaz 3");
+
+    Tree* galaz1_1 = galaz1->AddSub("galaz 1.1");
+
+    Tree* galaz2_1 = galaz2->AddSub("galaz 2.1");
+
+    Tree* galaz2_2 = galaz2->AddSub("galaz 2.2");
+
+    Tree* galaz2_1_2 = galaz2_1->AddSub("galaz 2.1.1");
+
+    root->print(0,true);
+
+     root->Del(0);
+
+    delete(root);
+
+
+    std::cout<<root->GetSubCount()<<"\n";
+    std::cout<<galaz1->GetSubCount()<<"\n";
+    std::cout<<root->GetAllSubCount()<<"\n";
+
+
     return 0;
 }
 
@@ -493,31 +527,7 @@ int main()
 // }
 
 // // TEST_CASE("TASK4/5") {
-//     // Tree* root = new Tree("root");
 
-//     // Tree* galaz1= root->AddSub("galaz 1");
-//     // Tree* galaz2 = root->AddSub("galaz 2");
-
-//     // Tree* galaz3 = root->AddSub("galaz 3");
-
-//     // Tree* galaz1_1 = galaz1->AddSub("galaz 1.1");
-
-//     // Tree* galaz2_1 = galaz2->AddSub("galaz 2.1");
-
-//     // Tree* galaz2_2 = galaz2->AddSub("galaz 2.2");
-
-//     // Tree* galaz2_1_2 = galaz2_1->AddSub("galaz 2.1.1");
-
-//     // root->print(0,true);
-
-//     // // root->Del(0);
-
-//     // // delete(galaz2_2);
-
-
-//     // std::cout<<root->GetSubCount()<<"\n";
-//     // std::cout<<galaz1->GetSubCount()<<"\n";
-//     // std::cout<<root->GetAllSubCount()<<"\n";
 // // }
 
 
