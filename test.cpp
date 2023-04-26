@@ -12,8 +12,6 @@ public:
     Tree(std::string name) {this->name=name; this->parent=nullptr;}
     ~Tree()
     {       
-        std::cout << "Destructor: "<<this->GetName()<<"\n";
-
                 //root or detached branch -> delete branches
         while (! this->GetBranches().empty())
         {
@@ -33,12 +31,8 @@ public:
             }            
         } 
         }
-        
-       
-    }
-
-
     
+    }
 
     std::string GetName()
     {
@@ -128,13 +122,9 @@ public:
                 {
                     this->GetBranches()[child]->Del(this->GetBranches()[child]->GetBranches().size()-1); //first element is deleted till vector becomes empty (after deletion, branch size is reduced) 
                 }
-                //unlink parent from pointer
-                // this->GetBranches()[child]->parent=nullptr;
                 //free memory
-                //free(this->GetBranches()[child]);
                 delete (this->GetBranches()[child]);
-                //remove requested child from branches
-                // this->GetBranches().erase(this->GetBranches().begin()+child);    
+   
            }
         }
 
@@ -226,7 +216,6 @@ BitStream::BitStream(/* args */)
 BitStream::~BitStream()
 { 
     delete [] Stream;
-
 }
 
 uint8_t* BitStream::GetStream()
@@ -243,17 +232,10 @@ uint32_t BitStream::Add(uint32_t bitLength, void * dataAddr)
     {
        uint8_t bytes = i / 8;
        uint8_t bits = i % 8;
-       printf("Stream vor : %02x \n",this->Stream[this->byte]);
 
        uint8_t dataBit = Mask[bits] & (data[bytes]);
        bool shift = dataBit>0;
-       printf("bit data: %02x \n",dataBit);
-       printf("current bit: %d \n",this->bit);
-       printf("current byte: %d \n",this->byte);
-       printf("bites: %d \n",bits);
-       printf("bytes: %d \n",bytes);
        Stream[this->byte] +=(shift << this->bit );
-       printf("Stream nach : %02x \n",Stream[this->byte]);
        this->MoveBitForward();
     }  
     return this->GetBitLength();
@@ -271,22 +253,14 @@ uint32_t BitStream::Add(uint32_t bitLength, void * dataAddr)
                 this->MoveBitBackward();
                 uint8_t bytes = i / 8; //get amount of bytes
                 uint8_t bits = i % 8; //get amount of bits
-                printf("            data vor : %02x \n",data[bytes]);
 
                 uint8_t dataBit = Mask[this->bit] & (this->Stream[this->byte]);
                 bool shift = dataBit>0;
-                printf("bit data: %02x \n",dataBit);
-                printf("current bit: %d \n",this->bit);
-                printf("current byte: %d \n",this->byte);
-                printf("bites: %d \n",bits);
-                printf("bytes: %d \n",bytes);
-                printf("     mask: %d \n",(data[bytes] & Mask[bits]));
+
                 if ((data[bytes] & Mask[bits])==0 && shift)
                    data[bytes] +=(shift << bits );
                 else if ((data[bytes] & Mask[bits]) !=0 && !shift)
-                    data[bytes] -=(1 << bits );
-                // data[bytes] +=(shift << bits );
-                printf("data nach : %02x \n",data[bytes]);                
+                    data[bytes] -=(1 << bits );            
             }
         }
         
@@ -317,21 +291,12 @@ uint32_t BitStream::GetData(void * addr, uint32_t maxBitLength)
             uint8_t strByte= j / 8; //stream byte "pointer"
             uint8_t strBit= j % 8; //stream Bit "pointer"
 
-            printf("data vor : %02x \n",data[exByte]);
-
             uint8_t dataBit = Mask[strBit] & (this->Stream[strByte]);
             bool shift = dataBit>0;
-            printf("bit data: %02x \n",dataBit);
-            printf("ex bit: %d \n",exBit);
-            printf("ex byte: %d \n",exByte);
-            printf("strbite: %d \n",strBit);
-            printf("strbyte: %d \n",strByte);
             if ((data[exByte] & Mask[exBit])==0 && shift)
                    data[exByte] +=(shift << exBit );
             else if ((data[exByte] & Mask[exBit]) !=0 && !shift)
-                    data[exByte] -=(1 << exBit );
-            printf("data nach : %02x \n",data[exByte]); 
-            
+                    data[exByte] -=(1 << exBit );           
         }
         
         
@@ -406,8 +371,8 @@ TEST_CASE("TASK3","[task3]") {
     for (size_t i = 0; i < a.size(); i++)
     {
         bool res = a_int & (1<<i);
-        INFO("bit: "+i);
-        CHECK( a[i] ==  res); 
+        //INFO("bit: "+i);
+        REQUIRE( a[i] ==  res); 
     }
     }
     SECTION("vectors are identical")
