@@ -14,34 +14,27 @@ public:
     {       
         std::cout << "Destructor: "<<this->GetName()<<"\n";
 
-        Tree* par=this->parent;
-        if (par != nullptr)
+                //root or detached branch -> delete branches
+        while (! this->GetBranches().empty())
         {
-            for (size_t i = 0; i < par->GetBranches().size(); i++)
-            {
-                //this found as child in parent interface
-                if (this == par->GetBranches()[i])
-                {
-                    //delete this object from parent interface
-                    par->Del(i);
-                    delete(par->GetBranches()[i]);
-                    exit;
-                }
-                
-                
-            }
-            //this object is not responsible for parrent allocation set null
-            //parent = nullptr;
-        }
-        else
+            this->Del(0);
+            
+        }  
+        
+        if (parent != nullptr)
         {
-            //root or detached branch -> delete branches
-            while (! this->GetBranches().empty())
+        for (size_t i = 0; i < parent->GetBranches().size(); i++)
+        {
+            if (parent->GetBranches()[i]==this)
             {
-                this->Del(0);
-                
-            }  
+                parent->GetBranches().erase(parent->GetBranches().begin()+i);
+                this->parent=nullptr;
+                break;
+            }            
+        } 
         }
+        
+       
     }
 
 
@@ -79,26 +72,26 @@ public:
         return NewBranch;
     }
 
-    void print(int indent)
+    void print(int indent,std::ostream& os=std::cout)
     {   
-        print(indent,false);
+        print(indent,false,os);
     }
 
-    void print(int indent,bool numbers)
+    void print(int indent,bool numbers,std::ostream& os=std::cout)
     {
         //print tabulator indent times + name of current branch
-        std::cout << std::string(indent, '\t');
+        os << std::string(indent, '\t');
         if (numbers && this->GetParent() != nullptr)
         {
-            std::cout<< (this->GetIndex(this->GetParent(),this))<<" ";
+            os<< (this->GetIndex(this->GetParent(),this))<<" ";
         }
-        std::cout<< this->GetName() << "\n"; 
+        os<< this->GetName() << "\n"; 
             
         //loop through all subbranches
         for (Tree* i : this->GetBranches())
         {   if (i!=nullptr)
             { 
-                i->print(indent+1,numbers);
+                i->print(indent+1,numbers,os);
             }
         }
     }
@@ -125,23 +118,23 @@ public:
      void Del(int child)
      {
 
-        if (child<this->GetBranches().size())
+        if (child< this->GetBranches().size())
         {
             //child has memory allocation
            if (this->GetBranches()[child] !=nullptr )
            {    
                 //delete all branches of requested child
-                while (! this->GetBranches()[child]->GetBranches().empty())
+                while (this->GetBranches()[child]->GetBranches().empty()==false)
                 {
-                    this->GetBranches()[child]->Del(0); //first element is deleted till vector becomes empty (after deletion, branch size is reduced) 
+                    this->GetBranches()[child]->Del(this->GetBranches()[child]->GetBranches().size()-1); //first element is deleted till vector becomes empty (after deletion, branch size is reduced) 
                 }
                 //unlink parent from pointer
-                this->GetBranches()[child]->parent=nullptr;
+                // this->GetBranches()[child]->parent=nullptr;
                 //free memory
                 //free(this->GetBranches()[child]);
-                //delete (this->GetBranches()[child]);
+                delete (this->GetBranches()[child]);
                 //remove requested child from branches
-                this->GetBranches().erase(this->GetBranches().begin()+child);    
+                // this->GetBranches().erase(this->GetBranches().begin()+child);    
            }
         }
 
@@ -207,9 +200,6 @@ std::vector<bool> GetBitsVector(std::string inputValue)
 {
     return GetBitsVector(HexStringToInt(inputValue));
 }
-
-
-
 
 //TASK6
 void PrintVectorRevers(std::vector<char> elements,std::ostream& os = std::cout)
@@ -392,70 +382,44 @@ void BitStream::MoveBitBackward()
     }
 }
 
-int main()
-{
-//     BitStream Bitstr;
-//     uint16_t Var0=15;
-//     uint16_t Var1=16;
-//     uint16_t Var2=17;
-//     uint16_t Var3=18;
-//     uint16_t Var4=19;
-//     uint16_t Var5=20;
-//     uint16_t Var6=21;
-//     std::cout<<Bitstr.Add(4,&Var0)<<"\n";
-//     std::cout<<"Var0 : "<<(Var0 & 0x0F)<<"\n";
-//     std::cout<<Bitstr.Add(2,&Var1)<<"\n";
-//     std::cout<<"Var1 : "<<(Var1 & 0x03)<<"\n";
-//     std::cout<<Bitstr.Add(5,&Var2)<<"\n";
-//     std::cout<<"Var2 : "<<(Var2 & 0x1F)<<"\n";
-//     std::cout<<Bitstr.Add(1,&Var3)<<"\n";
-//     std::cout<<"Var3 : "<<(Var3 & 0x01)<<"\n";
-//     std::cout<<Bitstr.Add(8,&Var4)<<"\n";
-//     std::cout<<"Var4 : "<<(Var4 & 0xFF)<<"\n";    
-//     std::cout<<Bitstr.Add(16,&Var5)<<"\n";
-//     std::cout<<"Var5 : "<<(Var5 & 0xFFFF)<<"\n";        
-//     std::cout<<Bitstr.Add(4,&Var6)<<"\n";        
-//     std::cout<<"Var6 : "<<(Var6 & 0x0F)<<"\n";           
-//     uint16_t Var10=0;
-//     uint16_t Var11=0;
-//     uint16_t Var12=0;
-//     uint16_t Var13=0;
-//     uint16_t Var14=0;
-//     uint16_t Var15=0;//11 1000 1111 911
-//     uint16_t Var16=0;//1110 0011 227
-//     std::cout<<Bitstr.Get(4,&Var16)<<"\n";
-//     std::cout<<"Var16: "<<Var16<<"\n";//5
-//     std::cout<<Bitstr.Get(16,&Var15)<<"\n";
-//     std::cout<<"Var15: "<<Var15<<"\n";//20
-//     std::cout<<Bitstr.Get(8,&Var14)<<"\n"; 
-//     std::cout<<"Var14: "<<Var14<<"\n";//19
-//     std::cout<<Bitstr.Get(1,&Var13)<<"\n";
-//     std::cout<<"Var13: "<<Var13<<"\n";//13 
-//     std::cout<<Bitstr.Get(5,&Var12)<<"\n";
-//     std::cout<<"Var12: "<<Var12<<"\n";//17
-//     std::cout<<Bitstr.Get(2,&Var11)<<"\n";
-//     std::cout<<"Var11: "<<Var11<<"\n"; //0
-//     std::cout<<Bitstr.Get(4,&Var10)<<"\n";
-//     std::cout<<"Var10: "<<Var10<<"\n"; //15
-// ////////////////////////////////////////////ALLES OKO
-//     BitStream Bitstr2;
-//     uint32_t databuffer=99;
-//     uint16_t databuffer3=0;
-//     std::cout<<Bitstr2.Add(2,&databuffer)<<"\n";
-//     std::cout<<"          Bitstr2.GetData(&databuffer3,16): "<<Bitstr2.GetData(&databuffer3,16)<<"\n";
-//     std::cout<<"          databuffer3: "<<databuffer3<<"\n";
-//     uint32_t databuffer1;
-//     std::cout<<Bitstr2.Add(8,&databuffer)<<"\n";
-//     std::cout<<"          Bitstr2.GetData(&databuffer3,16): "<<Bitstr2.GetData(&databuffer3,16)<<"\n";
-//     std::cout<<"          databuffer3: "<<databuffer3<<"\n";
+/******************************   TESTS   ************************/
 
-//     uint16_t databuffer2=0;
-//     std::cout<<Bitstr2.Get(10,&databuffer2)<<"\n";
-//     std::cout<<databuffer2<<"\n";
-//     std::cout<<(databuffer2==399);
+#define CATCH_CONFIG_MAIN
+////#define CATCH_CONFIG_RUNNER
 
-//TREE
-    Tree* root = new Tree("root");
+#include "catch.hpp"
+
+
+TEST_CASE("TASK1") {
+REQUIRE( GetBitsFromUint32(0xABCDEF12, 4, 12) ==  0x00000ef1);   
+}
+
+TEST_CASE("TASK2") {
+REQUIRE( GetBitsFromUint32("0xaBCDEF12", 4, 12) ==  0x00000ef1);   
+}
+
+TEST_CASE("TASK3","[task3]") {
+    SECTION("Bit order correctness")
+    {
+        std::vector<bool> a = GetBitsVector(149);
+        uint32_t a_int=149;
+    for (size_t i = 0; i < a.size(); i++)
+    {
+        bool res = a_int & (1<<i);
+        INFO("bit: "+i);
+        CHECK( a[i] ==  res); 
+    }
+    }
+    SECTION("vectors are identical")
+    {
+    std::vector<bool> b = GetBitsVector(0x95);
+    std::vector<bool> c = GetBitsVector("0x95");
+    REQUIRE( b ==  c);  
+    } 
+}
+
+ TEST_CASE("TASK4/5") {
+   Tree* root = new Tree("root");
 
     Tree* galaz1= root->AddSub("galaz 1");
     Tree* galaz2 = root->AddSub("galaz 2");
@@ -468,97 +432,103 @@ int main()
 
     Tree* galaz2_2 = galaz2->AddSub("galaz 2.2");
 
-    Tree* galaz2_1_2 = galaz2_1->AddSub("galaz 2.1.1");
+    Tree* galaz2_1_1 = galaz2_1->AddSub("galaz 2.1.1");
+    REQUIRE((root->GetSubCount()) == 3);
+    REQUIRE((galaz1->GetSubCount()) == 1);
+    REQUIRE((root->GetAllSubCount()) == 7);
 
-    root->print(0,true);
-
-     root->Del(0);
-
+    std::ostringstream oss;
+    root->print(0,true,oss);
+       
+    std::string directory ="root\n\t1. galaz 1\n\t\t1.1. galaz 1.1\n\t2. galaz 2\n\t\t2.1. galaz 2.1\n\t\t\t2.1.1. galaz 2.1.1\n\t\t2.2. galaz 2.2\n\t3. galaz 3\n";
+	REQUIRE( oss.str() ==  directory); 	
+	    
+    delete(galaz1);
+    REQUIRE(root->GetAllSubCount()==5);
+    root->Del(1);
+    delete(galaz2);
     delete(root);
+ }
 
 
-    std::cout<<root->GetSubCount()<<"\n";
-    std::cout<<galaz1->GetSubCount()<<"\n";
-    std::cout<<root->GetAllSubCount()<<"\n";
 
-
-    return 0;
+TEST_CASE("TASK6") {
+    std::vector<char> a ={'a','b','c','d'};
+    std::ostringstream oss;
+    PrintVectorRevers(a,oss);
+    REQUIRE( oss.str() ==  "d,c,b,a");   
 }
 
+TEST_CASE("TASK7") {
+    BitStream Bitstr;
+    SECTION("Main Case")
+    {
+        BitStream Bitstr;
+        uint16_t Var0=15;
+        uint16_t Var1=16;
+        uint16_t Var2=17;
+        uint16_t Var3=18;
+        uint16_t Var4=19;
+        uint16_t Var5=20;
+        uint16_t Var6=21;
+        REQUIRE(Bitstr.Add(4,&Var0)==4);
+        REQUIRE(Bitstr.Add(2,&Var1)==6);
+        REQUIRE(Bitstr.Add(5,&Var2)==11);
+        REQUIRE(Bitstr.Add(1,&Var3)==12);
+        REQUIRE(Bitstr.Add(8,&Var4)==20);
+        REQUIRE(Bitstr.Add(16,&Var5)==36);
+        REQUIRE(Bitstr.Add(4,&Var6)==40);     
+        REQUIRE(Bitstr.GetBitLength()==40);
 
-/******************************   TESTS   ************************/
+        uint16_t Var10=0;
+        uint16_t Var11=0;
+        uint16_t Var12=0;
+        uint16_t Var13=0;
+        uint16_t Var14=0;
+        uint16_t Var15=0;//11 1000 1111 911
+        uint16_t Var16=0;//1110 0011 227
 
-// #define CATCH_CONFIG_MAIN
-// ////#define CATCH_CONFIG_RUNNER
+        REQUIRE(Bitstr.Get(4,&Var16)==36);
+        REQUIRE(Var16 == (Var6 & 0x0F));
 
-// #include "catch.hpp"
+        REQUIRE(Bitstr.Get(16,&Var15)==20);
+        REQUIRE(Var15 == (Var5 & 0xFFFF));
 
+        REQUIRE(Bitstr.Get(8,&Var14)==12);
+        REQUIRE(Var14 == (Var4 & 0xFF));
 
-// TEST_CASE("Catching proof") {
-//     CHECK(1 == 1);   
-// }
+        REQUIRE(Bitstr.Get(1,&Var13)==11);
+        REQUIRE(Var13 == (Var3 & 0x01));
 
-// TEST_CASE("TASK1") {
-// REQUIRE( GetBitsFromUint32(0xABCDEF12, 4, 12) ==  0x00000ef1);   
-// }
+        REQUIRE(Bitstr.Get(5,&Var12)==6);
+        REQUIRE(Var12 == (Var2 & 0x1F));
 
-// TEST_CASE("TASK2") {
-// REQUIRE( GetBitsFromUint32("0xaBCDEF12", 4, 12) ==  0x00000ef1);   
-// }
+        REQUIRE(Bitstr.Get(2,&Var11)==4);
+        REQUIRE(Var11 == (Var1 & 0x03));
 
-// TEST_CASE("TASK3","[task3]") {
-//     SECTION("Bit order correctness")
-//     {
-//         std::vector<bool> a = GetBitsVector(149);
-//         uint32_t a_int=149;
-//     for (size_t i = 0; i < a.size(); i++)
-//     {
-//         bool res = a_int & (1<<i);
-//         INFO("bit: "+i);
-//         CHECK( a[i] ==  res); 
-//     }
-//     }
-//     SECTION("vectors are identical")
-//     {
-//     std::vector<bool> b = GetBitsVector(0x95);
-//     std::vector<bool> c = GetBitsVector("0x95");
-//     REQUIRE( b ==  c);  
-//     } 
-// }
+        REQUIRE(Bitstr.Get(4,&Var10)==0);
+        REQUIRE(Var10 == (Var0 & 0x0F));
+        REQUIRE(Bitstr.GetBitLength()==0);
 
-// // TEST_CASE("TASK4/5") {
+        Bitstr.ResetData();
+       
+        BitStream Bitstr2;
+        uint32_t databuffer=99;
+        uint16_t databuffer2=0;
+        uint16_t databuffer3=0;
+        REQUIRE(Bitstr2.Add(2,&databuffer)==2);
+        REQUIRE(Bitstr2.GetData(&databuffer3,sizeof(databuffer3)*8) == 2);
+        REQUIRE(databuffer3 == 3);
 
-// // }
+        
+        REQUIRE(Bitstr2.Add(8,&databuffer) == 10);
+        REQUIRE(Bitstr2.GetData(&databuffer3,sizeof(databuffer3)*8) == 10);
+        REQUIRE(databuffer3 == 399);
+    }
 
 
 
-// TEST_CASE("TASK6") {
-//     std::vector<char> a ={'a','b','c','d'};
-//     std::ostringstream oss;
-//     PrintVectorRevers(a,oss);
-//     //assert(oss && oss.str() == "Hello");
-//     REQUIRE( oss.str() ==  "d,c,b,a");   
-// }
-
-// TEST_CASE("TASK7") {
-//     BitStream Bitstr;
-//     SECTION("Add")
-//     {
-//     uint32_t databuffer=99;//99->399, 227->911
-//     REQUIRE(Bitstr.Add(2,&databuffer)==2);
-//     uint32_t databuffer1;
-//     REQUIRE(Bitstr.Add(8,&databuffer)==10);
-//     //REQUIRE(Bitstr.GetData(&databuffer1,sizeof(databuffer1*8))==1);
-
-//     }
-    
-//     SECTION("Get")
-//     {
-//     uint16_t databuffer2=0;
-//     REQUIRE(Bitstr.Get(10,&databuffer2)==0);
-//     REQUIRE(databuffer2==399);
-//     }  
-// }
+}
 
 
 
