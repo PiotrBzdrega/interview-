@@ -1,103 +1,5 @@
 #include "test.h"
 
-#if 0
-#define CATCH_CONFIG_MAIN
-////#define CATCH_CONFIG_RUNNER
-
-#include "catch.hpp"
-
-
-TEST_CASE("Catching proof") {
-    CHECK(1 == 1);   
-}
-
-TEST_CASE("TASK1") {
-REQUIRE( GetBitsFromUint32(0xABCDEF12, 4, 12) ==  0x00000ef1);   
-}
-
-TEST_CASE("TASK2") {
-REQUIRE( GetBitsFromUint32("0xaBCDEF12", 4, 12) ==  0x00000ef1);   
-}
-
-TEST_CASE("TASK3","[task3]") {
-    SECTION("Bit order correctness")
-    {
-        std::vector<bool> a = GetBitsVector(149);
-        uint32_t a_int=149;
-    for (size_t i = 0; i < a.size(); i++)
-    {
-        bool res = a_int & (1<<i);
-        INFO("bit: "+i);
-        CHECK( a[i] ==  res); 
-    }
-    }
-    SECTION("vectors are identical")
-    {
-    std::vector<bool> b = GetBitsVector(0x95);
-    std::vector<bool> c = GetBitsVector("0x95");
-    REQUIRE( b ==  c);  
-    } 
-}
-
-// TEST_CASE("TASK4/5") {
-    // Tree* root = new Tree("root");
-
-    // Tree* galaz1= root->AddSub("galaz 1");
-    // Tree* galaz2 = root->AddSub("galaz 2");
-
-    // Tree* galaz3 = root->AddSub("galaz 3");
-
-    // Tree* galaz1_1 = galaz1->AddSub("galaz 1.1");
-
-    // Tree* galaz2_1 = galaz2->AddSub("galaz 2.1");
-
-    // Tree* galaz2_2 = galaz2->AddSub("galaz 2.2");
-
-    // Tree* galaz2_1_2 = galaz2_1->AddSub("galaz 2.1.1");
-
-    // root->print(0,true);
-
-    // // root->Del(0);
-
-    // // delete(galaz2_2);
-
-
-    // std::cout<<root->GetSubCount()<<"\n";
-    // std::cout<<galaz1->GetSubCount()<<"\n";
-    // std::cout<<root->GetAllSubCount()<<"\n";
-// }
-
-
-
-TEST_CASE("TASK6") {
-    std::vector<char> a ={'a','b','c','d'};
-    std::ostringstream oss;
-    PrintVectorRevers(a,oss);
-    //assert(oss && oss.str() == "Hello");
-    REQUIRE( oss.str() ==  "d,c,b,a");   
-}
-
-TEST_CASE("TASK7") {
-    BitStream Bitstr;
-    SECTION("Add")
-    {
-    uint32_t databuffer=99;
-    REQUIRE(Bitstr.Add(2,&databuffer)==2);
-    uint32_t databuffer1;
-    REQUIRE(Bitstr.Add(8,&databuffer)==10);
-    //REQUIRE(Bitstr.GetData(&databuffer1,sizeof(databuffer1*8))==1);
-
-    }
-    
-    SECTION("Get")
-    {
-    uint16_t databuffer2=0;
-    REQUIRE(Bitstr.Get(10,&databuffer2)==0);
-    REQUIRE(databuffer2==399);
-    }  
-}
-#endif
-
 //TASK4, Task5
 class Tree{
 private:
@@ -242,38 +144,6 @@ public:
     }
 };
 
-
-
-#if 1
-int main()
-{
- 
-
-    std::getchar();  
-    std::cout<<"adam";
- 
-    // std::vector<bool> a = GetBitsVector(149); //TASK3
-    // for (auto i:a)
-    // {
-    //     std::cout<<i<<"\n";
-    // }
-
-    // std::vector<bool> g = GetBitsVector("0x95"); //TASK3
-    // for (auto i:g)
-    // {
-    //     std::cout<<i<<"\n";
-    // }
-
-    // std::cout<<"vector are same: "<<((a==g) ? true:false)<<"\n";
-
-    // std::cout<<"\n"<<"TASK 7"<<"\n";
-
-    return 0;
-} 
-#endif
-
-
-
 //TASK1
 uint32_t GetBitsFromUint32(uint32_t inputValue, uint8_t bitOffset, uint8_t Length)
 {   
@@ -396,17 +266,17 @@ uint32_t BitStream::Add(uint32_t bitLength, void * dataAddr)
 
     uint32_t BitStream::Get(uint32_t bitLength, void* dataAddr)
     {   //stream collected enough bits to response for request 
-        if (bitLength <= this->GetBitLength() && bitLength>0)
+        if (bitLength <= this->GetBitLength() && bitLength>0 && dataAddr != nullptr)
         {
             uint8_t* data= static_cast<uint8_t*>(dataAddr);
             bitLength--; //bit "pointer" is set up one bit behind
 
-            for (uint32_t i = bitLength; i != -1 ; i--)
+            for (uint32_t i = bitLength; i != -1 && this->GetBitLength() > 0; i--)
             {
                 this->MoveBitBackward();
                 uint8_t bytes = i / 8; //get amount of bytes
                 uint8_t bits = i % 8; //get amount of bits
-                printf("data vor : %02x \n",data[bytes]);
+                printf("            data vor : %02x \n",data[bytes]);
 
                 uint8_t dataBit = Mask[this->bit] & (this->Stream[this->byte]);
                 bool shift = dataBit>0;
@@ -415,7 +285,12 @@ uint32_t BitStream::Add(uint32_t bitLength, void * dataAddr)
                 printf("current byte: %d \n",this->byte);
                 printf("bites: %d \n",bits);
                 printf("bytes: %d \n",bytes);
-                data[bytes] +=(shift << bits );
+                printf("     mask: %d \n",(data[bytes] & Mask[bits]));
+                if ((data[bytes] & Mask[bits])==0 && shift)
+                   data[bytes] +=(shift << bits );
+                else if ((data[bytes] & Mask[bits]) !=0 && !shift)
+                    data[bytes] -=(1 << bits );
+                // data[bytes] +=(shift << bits );
                 printf("data nach : %02x \n",data[bytes]);                
             }
         }
@@ -430,7 +305,44 @@ uint32_t BitStream::GetBitLength()
 
 uint32_t BitStream::GetData(void * addr, uint32_t maxBitLength)
 {
-    return this->Get(maxBitLength,addr);
+    int j=0;// current bit in stream
+    
+    //stream is non zero and dedicated memory for external addr is non zero
+    if (maxBitLength>0 && this->GetBitLength()>0 && addr !=nullptr)
+    {
+        uint32_t streamLength = this->GetBitLength(); //move bit "pointer" backward
+
+        uint8_t* data= static_cast<uint8_t*>(addr);//pointer casting
+        //int i=maxBitLength-1; //bit "pointer" is set up one bit behind
+        
+        for (int i=0; i <(maxBitLength-1) && j < streamLength ; i++ , j++)
+        {
+            uint8_t exByte= i / 8; //external byte "pointer"
+            uint8_t exBit= i % 8; //external Bit "pointer"
+            uint8_t strByte= j / 8; //stream byte "pointer"
+            uint8_t strBit= j % 8; //stream Bit "pointer"
+
+            printf("data vor : %02x \n",data[exByte]);
+
+            uint8_t dataBit = Mask[strBit] & (this->Stream[strByte]);
+            bool shift = dataBit>0;
+            printf("bit data: %02x \n",dataBit);
+            printf("ex bit: %d \n",exBit);
+            printf("ex byte: %d \n",exByte);
+            printf("strbite: %d \n",strBit);
+            printf("strbyte: %d \n",strByte);
+            if ((data[exByte] & Mask[exBit])==0 && shift)
+                   data[exByte] +=(shift << exBit );
+            else if ((data[exByte] & Mask[exBit]) !=0 && !shift)
+                    data[exByte] -=(1 << exBit );
+            printf("data nach : %02x \n",data[exByte]); 
+            
+        }
+        
+        
+    }
+    
+    return j;
 }
 
 void BitStream::ResetData()
@@ -474,5 +386,169 @@ void BitStream::MoveBitBackward()
         
     }
 }
+
+int main()
+{
+//     BitStream Bitstr;
+//     uint16_t Var0=15;
+//     uint16_t Var1=16;
+//     uint16_t Var2=17;
+//     uint16_t Var3=18;
+//     uint16_t Var4=19;
+//     uint16_t Var5=20;
+//     uint16_t Var6=21;
+//     std::cout<<Bitstr.Add(4,&Var0)<<"\n";
+//     std::cout<<"Var0 : "<<(Var0 & 0x0F)<<"\n";
+//     std::cout<<Bitstr.Add(2,&Var1)<<"\n";
+//     std::cout<<"Var1 : "<<(Var1 & 0x03)<<"\n";
+//     std::cout<<Bitstr.Add(5,&Var2)<<"\n";
+//     std::cout<<"Var2 : "<<(Var2 & 0x1F)<<"\n";
+//     std::cout<<Bitstr.Add(1,&Var3)<<"\n";
+//     std::cout<<"Var3 : "<<(Var3 & 0x01)<<"\n";
+//     std::cout<<Bitstr.Add(8,&Var4)<<"\n";
+//     std::cout<<"Var4 : "<<(Var4 & 0xFF)<<"\n";    
+//     std::cout<<Bitstr.Add(16,&Var5)<<"\n";
+//     std::cout<<"Var5 : "<<(Var5 & 0xFFFF)<<"\n";        
+//     std::cout<<Bitstr.Add(4,&Var6)<<"\n";        
+//     std::cout<<"Var6 : "<<(Var6 & 0x0F)<<"\n";           
+//     uint16_t Var10=0;
+//     uint16_t Var11=0;
+//     uint16_t Var12=0;
+//     uint16_t Var13=0;
+//     uint16_t Var14=0;
+//     uint16_t Var15=0;//11 1000 1111 911
+//     uint16_t Var16=0;//1110 0011 227
+//     std::cout<<Bitstr.Get(4,&Var16)<<"\n";
+//     std::cout<<"Var16: "<<Var16<<"\n";//5
+//     std::cout<<Bitstr.Get(16,&Var15)<<"\n";
+//     std::cout<<"Var15: "<<Var15<<"\n";//20
+//     std::cout<<Bitstr.Get(8,&Var14)<<"\n"; 
+//     std::cout<<"Var14: "<<Var14<<"\n";//19
+//     std::cout<<Bitstr.Get(1,&Var13)<<"\n";
+//     std::cout<<"Var13: "<<Var13<<"\n";//13 
+//     std::cout<<Bitstr.Get(5,&Var12)<<"\n";
+//     std::cout<<"Var12: "<<Var12<<"\n";//17
+//     std::cout<<Bitstr.Get(2,&Var11)<<"\n";
+//     std::cout<<"Var11: "<<Var11<<"\n"; //0
+//     std::cout<<Bitstr.Get(4,&Var10)<<"\n";
+//     std::cout<<"Var10: "<<Var10<<"\n"; //15
+// ////////////////////////////////////////////ALLES OKO
+//     BitStream Bitstr2;
+//     uint32_t databuffer=99;
+//     uint16_t databuffer3=0;
+//     std::cout<<Bitstr2.Add(2,&databuffer)<<"\n";
+//     std::cout<<"          Bitstr2.GetData(&databuffer3,16): "<<Bitstr2.GetData(&databuffer3,16)<<"\n";
+//     std::cout<<"          databuffer3: "<<databuffer3<<"\n";
+//     uint32_t databuffer1;
+//     std::cout<<Bitstr2.Add(8,&databuffer)<<"\n";
+//     std::cout<<"          Bitstr2.GetData(&databuffer3,16): "<<Bitstr2.GetData(&databuffer3,16)<<"\n";
+//     std::cout<<"          databuffer3: "<<databuffer3<<"\n";
+
+//     uint16_t databuffer2=0;
+//     std::cout<<Bitstr2.Get(10,&databuffer2)<<"\n";
+//     std::cout<<databuffer2<<"\n";
+//     std::cout<<(databuffer2==399);
+    return 0;
+}
+
+
+/******************************   TESTS   ************************/
+
+// #define CATCH_CONFIG_MAIN
+// ////#define CATCH_CONFIG_RUNNER
+
+// #include "catch.hpp"
+
+
+// TEST_CASE("Catching proof") {
+//     CHECK(1 == 1);   
+// }
+
+// TEST_CASE("TASK1") {
+// REQUIRE( GetBitsFromUint32(0xABCDEF12, 4, 12) ==  0x00000ef1);   
+// }
+
+// TEST_CASE("TASK2") {
+// REQUIRE( GetBitsFromUint32("0xaBCDEF12", 4, 12) ==  0x00000ef1);   
+// }
+
+// TEST_CASE("TASK3","[task3]") {
+//     SECTION("Bit order correctness")
+//     {
+//         std::vector<bool> a = GetBitsVector(149);
+//         uint32_t a_int=149;
+//     for (size_t i = 0; i < a.size(); i++)
+//     {
+//         bool res = a_int & (1<<i);
+//         INFO("bit: "+i);
+//         CHECK( a[i] ==  res); 
+//     }
+//     }
+//     SECTION("vectors are identical")
+//     {
+//     std::vector<bool> b = GetBitsVector(0x95);
+//     std::vector<bool> c = GetBitsVector("0x95");
+//     REQUIRE( b ==  c);  
+//     } 
+// }
+
+// // TEST_CASE("TASK4/5") {
+//     // Tree* root = new Tree("root");
+
+//     // Tree* galaz1= root->AddSub("galaz 1");
+//     // Tree* galaz2 = root->AddSub("galaz 2");
+
+//     // Tree* galaz3 = root->AddSub("galaz 3");
+
+//     // Tree* galaz1_1 = galaz1->AddSub("galaz 1.1");
+
+//     // Tree* galaz2_1 = galaz2->AddSub("galaz 2.1");
+
+//     // Tree* galaz2_2 = galaz2->AddSub("galaz 2.2");
+
+//     // Tree* galaz2_1_2 = galaz2_1->AddSub("galaz 2.1.1");
+
+//     // root->print(0,true);
+
+//     // // root->Del(0);
+
+//     // // delete(galaz2_2);
+
+
+//     // std::cout<<root->GetSubCount()<<"\n";
+//     // std::cout<<galaz1->GetSubCount()<<"\n";
+//     // std::cout<<root->GetAllSubCount()<<"\n";
+// // }
+
+
+
+// TEST_CASE("TASK6") {
+//     std::vector<char> a ={'a','b','c','d'};
+//     std::ostringstream oss;
+//     PrintVectorRevers(a,oss);
+//     //assert(oss && oss.str() == "Hello");
+//     REQUIRE( oss.str() ==  "d,c,b,a");   
+// }
+
+// TEST_CASE("TASK7") {
+//     BitStream Bitstr;
+//     SECTION("Add")
+//     {
+//     uint32_t databuffer=99;//99->399, 227->911
+//     REQUIRE(Bitstr.Add(2,&databuffer)==2);
+//     uint32_t databuffer1;
+//     REQUIRE(Bitstr.Add(8,&databuffer)==10);
+//     //REQUIRE(Bitstr.GetData(&databuffer1,sizeof(databuffer1*8))==1);
+
+//     }
+    
+//     SECTION("Get")
+//     {
+//     uint16_t databuffer2=0;
+//     REQUIRE(Bitstr.Get(10,&databuffer2)==0);
+//     REQUIRE(databuffer2==399);
+//     }  
+// }
+
 
 
