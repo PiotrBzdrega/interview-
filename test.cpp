@@ -237,6 +237,8 @@ uint32_t BitStream::Add(uint32_t bitLength, void *dataAddr)
         uint8_t bytes = i / 8;
         uint8_t bits = i % 8;
 
+        // Stream[this->byte] += ((Mask[bits] & (data[bytes])) << this->bit);
+
         uint8_t dataBit = Mask[bits] & (data[bytes]);
         bool shift = dataBit > 0;
         Stream[this->byte] += (shift << this->bit);
@@ -258,13 +260,8 @@ uint32_t BitStream::Get(uint32_t bitLength, void *dataAddr)
             uint8_t bytes = i / 8; // get amount of bytes
             uint8_t bits = i % 8;  // get amount of bits
 
-            uint8_t dataBit = Mask[this->bit] & (this->Stream[this->byte]);
-            bool shift = dataBit > 0;
-
-            if ((data[bytes] & Mask[bits]) == 0 && shift)
-                data[bytes] += (shift << bits);
-            else if ((data[bytes] & Mask[bits]) != 0 && !shift)
-                data[bytes] -= (1 << bits);
+            if ((data[bytes] & Mask[bits]) != (Mask[this->bit] & (this->Stream[this->byte]))) // data XOR Stream
+                data[bytes] ^= (1 << bits);                                                   // toggle bit by XOR
         }
     }
 
@@ -295,12 +292,8 @@ uint32_t BitStream::GetData(void *addr, uint32_t maxBitLength)
             uint8_t strByte = j / 8; // stream byte "pointer"
             uint8_t strBit = j % 8;  // stream Bit "pointer"
 
-            uint8_t dataBit = Mask[strBit] & (this->Stream[strByte]);
-            bool shift = dataBit > 0;
-            if ((data[exByte] & Mask[exBit]) == 0 && shift)
-                data[exByte] += (shift << exBit);
-            else if ((data[exByte] & Mask[exBit]) != 0 && !shift)
-                data[exByte] -= (1 << exBit);
+            if ((data[exByte] & Mask[exBit]) != (Mask[strBit] & (this->Stream[strByte]))) // data XOR Stream
+                data[exByte] ^= (1 << exBit);                                             // toggle bit by XOR
         }
     }
 
@@ -492,5 +485,9 @@ TEST_CASE("TASK7")
         REQUIRE(Bitstr2.Add(8, &databuffer) == 10);
         REQUIRE(Bitstr2.GetData(&databuffer3, sizeof(databuffer3) * 8) == 10);
         REQUIRE(databuffer3 == 399);
+
+        REQUIRE(Bitstr2.Add(2, &databuffer) == 12);
+        REQUIRE(Bitstr2.GetData(&databuffer3, sizeof(databuffer3) * 8) == 12);
+        REQUIRE(databuffer3 == 3471);
     }
 }
