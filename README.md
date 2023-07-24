@@ -1,7 +1,8 @@
 # interview-
-interview tasks
+Tasks come across journey
 
-// --------- TASK 1 ---------
+## K
+### TASK 1 
 
 // function which will return given amount of bits with desired shift
 
@@ -16,7 +17,7 @@ uint32 res = GetBitsFromUint32(0xABCDEF12, 4, 12);
 
 
 
-// --------- TASK2 ---------
+### TASK 2
 
 //overload function with const char *:
 
@@ -31,7 +32,7 @@ uint32 res = GetBitsFromStr("0xABCDEF12", 4, 12); // pay attention to quotation!
 
 
 
-// --------- TASK 3 ---------
+### TASK 3
 
 // Extract bool vector from overloaded function
 
@@ -59,7 +60,7 @@ std::vector<bool> res = GetBitsVector("0x95");
 
 
 
-// --------- TASK 4 ---------
+### TASK 4
 
 // Create Tree class which will be able to generate string trees (like folders structure)
 
@@ -138,7 +139,7 @@ int main(...)
  
 
 
-// --------- TASK 5 ---------
+### TASK 5
 
 // Extension of "print" function which will add automatic numbering
 
@@ -185,7 +186,7 @@ root->Del(1);
  
 
 
-// ---------------- TASK 6 ---------------
+### TASK 6
 
 // Develop function, which will show all elements of vector in reverse order without (!) usage of any loops or libraries.
 
@@ -198,7 +199,7 @@ root->Del(1);
  
 
 
-// ---------------- TASK 7 ----------------
+### TASK 7
 
 Prepare class / set of functions, which allows serialization and deserialization of binary data, like:
 
@@ -232,3 +233,5 @@ uint32 BitStream::GetData(void * addr, uint32 maxBitLength); // allows to get fu
 
 BitStream::ResetData(); // clears internal buffer
 
+## A
+### TASK 8
