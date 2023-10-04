@@ -1,7 +1,8 @@
 # interview-
-interview tasks
+Tasks come across journey
 
-// --------- TASK 1 ---------
+## K
+### TASK 1 
 
 // function which will return given amount of bits with desired shift
 
@@ -16,7 +17,7 @@ uint32 res = GetBitsFromUint32(0xABCDEF12, 4, 12);
 
 
 
-// --------- TASK2 ---------
+### TASK 2
 
 //overload function with const char *:
 
@@ -31,7 +32,7 @@ uint32 res = GetBitsFromStr("0xABCDEF12", 4, 12); // pay attention to quotation!
 
 
 
-// --------- TASK 3 ---------
+### TASK 3
 
 // Extract bool vector from overloaded function
 
@@ -59,7 +60,7 @@ std::vector<bool> res = GetBitsVector("0x95");
 
 
 
-// --------- TASK 4 ---------
+### TASK 4
 
 // Create Tree class which will be able to generate string trees (like folders structure)
 
@@ -138,7 +139,7 @@ int main(...)
  
 
 
-// --------- TASK 5 ---------
+### TASK 5
 
 // Extension of "print" function which will add automatic numbering
 
@@ -185,7 +186,7 @@ root->Del(1);
  
 
 
-// ---------------- TASK 6 ---------------
+### TASK 6
 
 // Develop function, which will show all elements of vector in reverse order without (!) usage of any loops or libraries.
 
@@ -198,7 +199,7 @@ root->Del(1);
  
 
 
-// ---------------- TASK 7 ----------------
+### TASK 7
 
 Prepare class / set of functions, which allows serialization and deserialization of binary data, like:
 
@@ -232,3 +233,24 @@ uint32 BitStream::GetData(void * addr, uint32 maxBitLength); // allows to get fu
 
 BitStream::ResetData(); // clears internal buffer
 
+## A
+### TASK 8
+
+There are n people entering and exiting a room. For each i  {1, ... , n}, person i enters at time ai and exits at time bi (assume bi > ai for all i), and all the ai , bi are distinct.
+At the beginning of the day, the lights in the room are switched off, and the first person who enters the room switches them on. In order to conserve electricity, if person i
+leaves the room at time bi and there is no one else present in the room at time bi , then person i will switch the lights off. The next person to enter will then switch them on
+again. Given the values (al, bl),(a2, b2), .. .(an, bn), we want to find the number of times the lights get switched on. <br />
+Function signature: <br />
+int times(const std::vector<std::pair<int, int>>& persons); <br />
+• Write the solution. <br />
+• Check that your algorithm is correct. <br />
+• In comments, explain run time and space complexity for your algorithm. <br />
+Examples: <br />
+Input: [(1,5), (2, 6), (3, 7)] <br />
+Output: 1 <br />
+Input: [(11, 15), (1, 10), (2, 8), (5, 12)] <br />
+Output: 1 <br />
+Input: [(5,7), (6, 8), (9, 10), (1, 3), (2, 4)] <br />
+Output: 3 <br />
+Input: [(1,2), (2, 3), (3, 4)] <br />
+Output: 3 <br />
