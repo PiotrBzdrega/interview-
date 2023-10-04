@@ -1,9 +1,40 @@
-# interview-
-Tasks come across journey
+# interview tasks with Catch tests
 
-## K
+
+# Cmake BUILD
+
+### method A
+I used vscode cmake plugin which configure env for building process.  
+We can obtain same result by typing (in my case):
+```
+cmake --no-warn-unused-cli -DCMAKE_BUILD_TYPE:STRING=Release -DCMAKE_EXPORT_COMPILE_COMMANDS:BOOL=TRUE "-DCMAKE_C_COMPILER:FILEPATH=C:\Program Files\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin\gcc.exe" "-DCMAKE_CXX_COMPILER:FILEPATH=C:\Program Files\mingw-w64\x86_64-8.1.0-posix-seh-rt_v6-rev0\mingw64\bin\g++.exe" -S. -B./build -G "MinGW Makefiles"
+```
+and then:
+``` 
+cmake --build ./build --config Release --target all -j 18 --
+```
+you can now go to build and run tests:  
+```
+cd build
+tests.exe -s -r compact
+```
+-s (showing results for successful tests)  
+-r compact ( reports test results on a single line, suitable for IDEs)  
+[other cmd options](https://github.com/catchorg/Catch2/blob/devel/docs/command-line.md)
+
+
+### method B
+run:  
+``` 
+cmake -S. -B./build
+```
+in my case it used vs compiler so i had to build it in Visual Studio
+
+# TASKS
+## company K...
 ### TASK 1 
 
+```
 // function which will return given amount of bits with desired shift
 
 uint32 GetBitsFromUint32(unit32 inputValue, uint8 bitOffset, uint8bitLength);
@@ -13,12 +44,12 @@ uint32 GetBitsFromUint32(unit32 inputValue, uint8 bitOffset, uint8bitLength);
 uint32 res = GetBitsFromUint32(0xABCDEF12, 4, 12);
 
 // result is: res = 0x00000EF1;
-
+```
 
 
 
 ### TASK 2
-
+```
 //overload function with const char *:
 
 uint32 GetBitsFromUint32(const char* inputValue, uint8 bitOffset, uint8 bitLength);
@@ -28,12 +59,12 @@ uint32 res = GetBitsFromStr("0xABCDEF12", 4, 12); // pay attention to quotation!
 // result shall be the same
 
 // res = 0x00000EF1;
-
+```
 
 
 
 ### TASK 3
-
+```
 // Extract bool vector from overloaded function
 
 std::vector<bool> GetBitsVector(std::string inputValue);
@@ -55,13 +86,13 @@ std::vector<bool> res = GetBitsVector("0x95");
 // expected result (index 0 = LSB)
 
 // res = {true, false, true, false, true, false, false, true, ...}
-
+```
 
 
 
 
 ### TASK 4
-
+```
 // Create Tree class which will be able to generate string trees (like folders structure)
 
 // example of usage:
@@ -135,12 +166,12 @@ int main(...)
    delete(root); // deleting root shall remove all children (recursive) and clean memory
 
 }
-
+```
  
 
 
 ### TASK 5
-
+```
 // Extension of "print" function which will add automatic numbering
 
 // execution:
@@ -182,12 +213,12 @@ root->Del(1);
 //       1.1. galaz 1.1
 
 //    2. galaz 3
-
+```
  
 
 
 ### TASK 6
-
+```
 // Develop function, which will show all elements of vector in reverse order without (!) usage of any loops or libraries.
 
 // input vector: { a,b,c,d,e,f,g,h,i,j }
@@ -195,12 +226,12 @@ root->Del(1);
 // output:
 
 // j,i,h,g,f,e,d,c,b,a
-
+```
  
 
 
 ### TASK 7
-
+```
 Prepare class / set of functions, which allows serialization and deserialization of binary data, like:
 
 BitStream->Add(4, &Var0) // adds 4 bits of Var0 to a data stream / buffer
@@ -232,10 +263,10 @@ uint32 BitStream::GetBitLength(); // returns amount of added bits
 uint32 BitStream::GetData(void * addr, uint32 maxBitLength); // allows to get full stream, returns  number of bits
 
 BitStream::ResetData(); // clears internal buffer
-
-## A
+```
+## company A...
 ### TASK 8
-
+```
 There are n people entering and exiting a room. For each i  {1, ... , n}, person i enters at time ai and exits at time bi (assume bi > ai for all i), and all the ai , bi are distinct.
 At the beginning of the day, the lights in the room are switched off, and the first person who enters the room switches them on. In order to conserve electricity, if person i
 leaves the room at time bi and there is no one else present in the room at time bi , then person i will switch the lights off. The next person to enter will then switch them on
@@ -254,3 +285,4 @@ Input: [(5,7), (6, 8), (9, 10), (1, 3), (2, 4)] <br />
 Output: 3 <br />
 Input: [(1,2), (2, 3), (3, 4)] <br />
 Output: 3 <br />
+```
