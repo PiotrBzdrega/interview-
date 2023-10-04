@@ -1,5 +1,5 @@
 # Require CMAKE 3.1 or higher
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.1...3.5)
 
 # Project name
 project(interview-)
