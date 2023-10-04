@@ -153,7 +153,7 @@ uint32_t GetBitsFromUint32(std::string inputValue, uint8_t bitOffset, uint8_t Le
 // auxiliary function for TASK2 and TASK3
 uint32_t HexStringToInt(std::string str)
 {
-    uint32_t res;
+    uint32_t res = 0;
 
     // loop from last to 2nd element ([0,1]=0x prefix)
     for (size_t i = str.size() - 1; i > 1; i--)
@@ -343,10 +343,12 @@ void BitStream::MoveBitBackward()
 
 /******************************   TESTS   ************************/
 
-#define CATCH_CONFIG_MAIN
-////#define CATCH_CONFIG_RUNNER
+// #define CATCH_CONFIG_MAIN
+// ////#define CATCH_CONFIG_RUNNER (user's main)
 
-#include "catch.hpp"
+// #include "catch.hpp"
+
+#include <catch2/catch_test_macros.hpp>
 
 TEST_CASE("TASK1")
 {
